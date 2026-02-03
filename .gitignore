@@ -54,3 +54,6 @@ env/
 */ENV/
 */env/
 */.venv/
+
+# sccannerquebe
+.scannerwork/
