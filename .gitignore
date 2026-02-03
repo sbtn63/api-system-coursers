@@ -1,0 +1,56 @@
+# Python
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+*.manifest
+*.spec
+
+# Django
+*.log
+*.pot
+*.pyc
+__pycache__/
+db.sqlite3
+/media      
+/staticfiles
+*.env      
+.env.*
+
+# IDEs y Editores de Texto
+
+# VS Code
+.vscode/
+
+# PyCharm
+.idea/
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+
+# Coverage reports
+.coverage
+*.coveragerc
+
+# Django migrations (no se versionan las migraciones generadas)
+migrations/
+
+# Local virtual environments (ignorar entornos virtuales)
+venv/
+ENV/
+env/
+.venv/
+.venv/
+*/venv/
+*/ENV/
+*/env/
+*/.venv/
