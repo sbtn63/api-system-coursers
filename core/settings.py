@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'courses',
     'institutions',
     'tasks',
-    'wallpapers',
+    'wallpepers',
 ]
 
 MIDDLEWARE = [
