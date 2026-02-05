@@ -57,3 +57,5 @@ env/
 
 # sccannerquebe
 .scannerwork/
+.coverage
+coverage.xml
