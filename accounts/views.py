@@ -28,9 +28,9 @@ class LoginView(APIView):
         return Response({
             "message": "Login fallido",
             "path": request.path,
-            "status": status.HTTP_200_OK,
-            "data": serilizer.data
-        }, status=status.HTTP_200_OK)
+            "status": status.HTTP_400_BAD_REQUEST,
+            "data": serilizer.errors
+        }, status=status.HTTP_400_BAD_REQUEST)
 
 class RegisterView(APIView):
     def post(self, request, *args, **kwargs):

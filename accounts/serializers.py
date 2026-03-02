@@ -32,10 +32,10 @@ class LoginSerializer(serializers.Serializer):
         try:
             user = User.objects.get(username=data.get('username'))
         except User.DoesNotExist:
-            raise serializers.ValidationError("El usuario no existe.")
+            raise serializers.ValidationError("Credentials incorrect!!")
 
         if not user.check_password(data.get('password')):
-            raise serializers.ValidationError("Contraseña incorrecta.")
+            raise serializers.ValidationError("Credentials incorrect!!")
 
         data['user'] = user
         return data
