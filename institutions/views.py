@@ -1,5 +1,4 @@
 from rest_framework.views import APIView
-from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
@@ -7,6 +6,7 @@ from rest_framework.generics import get_object_or_404
 
 from institutions.models import Institution
 from institutions.serializers import InstitutionSerializer, InstitutionSaveSerializer
+from utils.responses import api_response 
 
 class InstitutionView(APIView):
     authentication_classes = [TokenAuthentication]
@@ -15,28 +15,63 @@ class InstitutionView(APIView):
     def get(self, request, *args, **kwargs):
         institutions = Institution.objects.filter(user=request.user)
         serializer = InstitutionSerializer(institutions, many=True)
-        return Response({
-            "message": "List Institutions",
-            "path": request.path,
-            "status": status.HTTP_200_OK,
-            "data": serializer.data
-        }, status=status.HTTP_200_OK)
+        return api_response(request, serializer.data, "List Institutions")
     
     def post(self, request, *args, **kwargs):
-        serializer = InstitutionSaveSerializer(data=request.data)
+        serializer = InstitutionSaveSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             institution = serializer.save(user=request.user)
-            
-            return Response({
-                "message": "Create Institution Success",
-                "path": request.path,
-                "status": status.HTTP_201_CREATED,
-                "data": InstitutionSerializer(institution).data
-            }, status=status.HTTP_201_CREATED)
+            return api_response(
+                request, 
+                InstitutionSerializer(institution).data,
+                "Create Institution Success", 
+                status.HTTP_201_CREATED
+            )
+               
+        return api_response(
+            request, 
+            serializer.errors,
+            "Create Institution Error",
+            status.HTTP_400_BAD_REQUEST
+        )
+
+class InstitutionDetailView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
         
-        return Response({
-                "message": "Create Institution Error",
-                "path": request.path,
-                "status": status.HTTP_400_BAD_REQUEST,
-                "data": serializer.errors
-        }, status=status.HTTP_400_BAD_REQUEST)    
+    def get(self, request, pk, *args, **kwargs):
+        institution = get_object_or_404(Institution, pk=pk, user=request.user)
+        serializer = InstitutionSerializer(institution)
+        return api_response(request, serializer.data, "Get Institution")
+    
+    def put(self, request, pk, *args, **kwargs):
+        institution = get_object_or_404(Institution, pk=pk, user=request.user)
+        serializer = InstitutionSaveSerializer(
+            institution, 
+            data=request.data, 
+            context={'request': request}
+        )
+        
+        if serializer.is_valid():
+            institution = serializer.save()
+            return api_response(
+                request,
+                InstitutionSerializer(institution).data,
+                "Update Institution Success",
+            )
+        
+        return api_response(
+            request,
+            serializer.errors,
+            "Update Institution Error",
+            status.HTTP_400_BAD_REQUEST
+        )
+        
+    def delete(self, request, pk, *args, **kwargs):
+        institution = get_object_or_404(Institution, pk=pk, user=request.user)
+        institution.delete()
+        return api_response(
+            request,
+            InstitutionSerializer(institution).data,
+            "Delete Institution Success",
+        )
