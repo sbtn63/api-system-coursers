@@ -13,6 +13,7 @@ class WallPeperView(APIView):
     
     def get(self, request, *args, **kwargs):
         wallpepers = WallPeper.objects.all()
+        print(wallpepers)
         serializer = WallPeperSerializer(wallpepers, many=True)
         return api_response(request, serializer.data, "List WallPepers")
 
