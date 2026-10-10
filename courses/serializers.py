@@ -13,7 +13,7 @@ class CourseSerializer(serializers.ModelSerializer):
             'name', 
             'block', 
             'period', 
-            'status', 
+            'course_status', 
             'start_date', 
             'end_date', 
             'institution_id', 
@@ -44,23 +44,33 @@ class CourseSaveSerializer(serializers.ModelSerializer):
             'name',
             'block',
             'period',
-            'status',
+            'course_status',
             'start_date',
             'end_date',
             'institution',
-            'wallpeper'
+            'wallpaper'
         )
     
+    def validate_institution(self, value):
+        user = self.context['request'].user
+        if value.user != user:
+            raise serializers.ValidationError("Institution not exists!!")  
+        return value
+    
     def validate_name(self, value):
-            user = self.context['request'].user
-            institution = self.context['request'].institution
-            instance = self.instance
-            queryset = Course.objects.filter(user=user, name=value, institution=institution)
+        user = self.context['request'].user
+        instance = self.instance
+        institution = self.initial_data.get('institution')
+        queryset = Course.objects.filter(
+            name=value, 
+            institution=institution, 
+            institution__user=user
+        )
             
-            if instance:
-                queryset = queryset.exclude(pk=instance.pk)
+        if instance:
+            queryset = queryset.exclude(pk=instance.pk)
             
-            if queryset.exists():
-                raise serializers.ValidationError("Name already exists for this name and Institution")
+        if queryset.exists():
+            raise serializers.ValidationError("Name already exists for this name and Institution")
             
-            return value
+        return value

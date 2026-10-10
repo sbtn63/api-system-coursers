@@ -14,14 +14,14 @@ class CourseView(APIView):
     permission_classes = [IsAuthenticated]
     
     def get(self, request, *args, **kwargs):
-        courses = Course.objects.filter(user=request.user)
+        courses = Course.objects.filter(institution__user=request.user)
         serializer = CourseSerializer(courses, many=True)
         return api_response(request, serializer.data, "List Courses")
     
     def post(self, request, *args, **kwargs):
         serializer = CourseSaveSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
-            course = serializer.save(user=request.user)
+            course = serializer.save()
             return api_response(
                 request,
                 CourseSerializer(course).data,
@@ -41,12 +41,12 @@ class CourseDetailView(APIView):
     permission_classes = [IsAuthenticated]
     
     def get(self, request, pk, *args, **kwargs):
-        course = get_object_or_404(Course, pk=pk, user=request.user)
+        course = get_object_or_404(Course, pk=pk, institution__user=request.user)
         serializer = CourseSerializer(course)
         return api_response(request, serializer.data, "Get Course Success")
     
     def put(self, request, pk, *args, **kwargs):
-        course = get_object_or_404(Course, pk=pk, user=request.user)
+        course = get_object_or_404(Course, pk=pk, institution__user=request.user)
         serializer = CourseSaveSerializer(
             course,
             data=request.data,
@@ -69,7 +69,7 @@ class CourseDetailView(APIView):
         )
     
     def delete(self, request, pk, *args, **kwargs):
-        course = get_object_or_404(Course, pk=pk, user=request.user)
+        course = get_object_or_404(Course, pk=pk, institution__user=request.user)
         course.delete()
         return api_response(
             request,
